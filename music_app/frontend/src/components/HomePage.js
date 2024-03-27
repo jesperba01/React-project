@@ -2,15 +2,11 @@ import React, { Component } from "react";
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
-import { Grid, Button, ButtonGroup, Typography } from "@material-ui/core";
-import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
 import Info from "./Info";
+import { Link, Switch, Route, Redirect } from "react-router-dom";
+import { Grid, ButtonGroup, Typography } from "@material-ui/core";
+
+console.log("1")
 
 export default class HomePage extends Component {
   constructor(props) {
@@ -22,16 +18,22 @@ export default class HomePage extends Component {
   }
 
   async componentDidMount() {
-    fetch("/api/user-in-room")
-      .then((response) => response.json())
-      .then((data) => {
-        this.setState({
-          roomCode: data.code,
-        });
+    try {
+      const response = await fetch("/api/user-in-room");
+      if (!response.ok) {
+        throw new Error("Failed to fetch room data");
+      }
+      const data = await response.json();
+      console.log("Received room data:", data); // Check if data is received
+      this.setState({
+        roomCode: data.code,
       });
+    } catch (error) {
+      console.error("Error fetching room data:", error);
+    }
   }
-
   renderHomePage() {
+    console.log("4")
     return (
       <Grid container spacing={3}>
         <Grid item xs={12} align="center">
@@ -41,53 +43,54 @@ export default class HomePage extends Component {
         </Grid>
         <Grid item xs={12} align="center">
           <ButtonGroup disableElevation variant="contained" color="primary">
-            <Button color="primary" to="/join" component={Link}>
+            <Button color="primary" component={Link} to="/join">
               Join a Room
             </Button>
-            <Button color="default" to="/info" component={Link}>
+            <Button color="default" component={Link} to="/info">
               Info
             </Button>
-            <Button color="secondary" to="/create" component={Link}>
+            <Button color="secondary" component={Link} to="/create">
               Create a Room
             </Button>
           </ButtonGroup>
         </Grid>
       </Grid>
+      
     );
   }
 
   clearRoomCode() {
+    console.log("5")
     this.setState({
       roomCode: null,
     });
   }
 
   render() {
+    console.log("6")
     return (
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => {
-              return this.state.roomCode ? (
-                <Redirect to={`/room/${this.state.roomCode}`} />
-              ) : (
-                this.renderHomePage()
-              );
-            }}
-          />
-          <Route path="/join" component={RoomJoinPage} />
-          <Route path="/info" component={Info} />
-          <Route path="/create" component={CreateRoomPage} />
-          <Route
-            path="/room/:roomCode"
-            render={(props) => {
-              return <Room {...props} leaveRoomCallback={this.clearRoomCode} />;
-            }}
-          />
-        </Switch>
-      </Router>
+      <Switch>
+        <Route
+          exact
+          path="/"
+          render={() => {
+            return this.state.roomCode ? (
+              <Redirect to={`/room/${this.state.roomCode}`} />
+            ) : (
+              this.renderHomePage()
+            );
+          }}
+        />
+        <Route path="/join" component={RoomJoinPage} />
+        <Route path="/info" component={Info} />
+        <Route path="/create" component={CreateRoomPage} />
+        <Route
+          path="/room/:roomCode"
+          render={(props) => {
+            return <Room {...props} leaveRoomCallback={this.clearRoomCode} />;
+          }}
+        />
+      </Switch>
     );
   }
 }

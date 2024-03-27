@@ -7,7 +7,10 @@ const GradientBackground = styled.div`
   background: linear-gradient(to right, ${props => props.color1}, ${props => props.color2});
 `;
 
+console.log("9");
+
 const ColorChangingBackground = () => {
+  console.log("11");
   const colors = [
     [62, 35, 255],
     [60, 255, 60],
