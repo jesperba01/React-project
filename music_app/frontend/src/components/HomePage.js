@@ -1,12 +1,9 @@
 import React, { Component } from "react";
+import { Grid, ButtonGroup, Typography } from "@material-ui/core";
 import RoomJoinPage from "./RoomJoinPage";
 import CreateRoomPage from "./CreateRoomPage";
 import Room from "./Room";
 import Info from "./Info";
-import { Link, Switch, Route, Redirect } from "react-router-dom";
-import { Grid, ButtonGroup, Typography } from "@material-ui/core";
-
-console.log("1")
 
 export default class HomePage extends Component {
   constructor(props) {
@@ -14,6 +11,7 @@ export default class HomePage extends Component {
     this.state = {
       roomCode: null,
     };
+    console.log("Component is mounting"); // Check if component is mounting
     this.clearRoomCode = this.clearRoomCode.bind(this);
   }
 
@@ -32,6 +30,7 @@ export default class HomePage extends Component {
       console.error("Error fetching room data:", error);
     }
   }
+
   renderHomePage() {
     console.log("4")
     return (
@@ -55,7 +54,6 @@ export default class HomePage extends Component {
           </ButtonGroup>
         </Grid>
       </Grid>
-      
     );
   }
 
@@ -74,6 +72,7 @@ export default class HomePage extends Component {
           exact
           path="/"
           render={() => {
+            // Check if roomCode is set, render redirect or homepage accordingly
             return this.state.roomCode ? (
               <Redirect to={`/room/${this.state.roomCode}`} />
             ) : (
